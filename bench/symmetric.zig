@@ -1,3 +1,5 @@
+//! Thread pool with all threads doing roughly the same thing.
+
 const builtin = @import("builtin");
 const std = @import("std");
 const Allocator = std.mem.Allocator;
@@ -41,7 +43,7 @@ fn run(gpa: Allocator, n: usize) void {
     runFallible(gpa, n) catch @panic("OOM");
 }
 
-fn runFallible(gpa: Allocator, n: usize) !usize {
+fn runFallible(gpa: Allocator, n: usize) !void {
     var numbers: std.ArrayListUnmanaged(usize) = .empty;
     defer numbers.deinit(gpa);
 
