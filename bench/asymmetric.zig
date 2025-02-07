@@ -40,7 +40,7 @@ fn producerRun(gpa: Allocator) void {
 }
 
 fn producerRunFallible(gpa: Allocator) !void {
-    for (0..1000000) |n| {
+    for (0..10000000) |n| {
         const string = try std.fmt.allocPrint(gpa, "{d}*{d} = {d}", .{ n, n, n * n });
         if (try queue.enqueue(gpa, &.{string})) event.set();
     }
@@ -61,5 +61,5 @@ fn consumerRun(gpa: Allocator) void {
         event.wait();
     }
     //std.io.getStdOut().writer().print("sum: {d}\n", .{sum}) catch @panic("write failure");
-    if (sum != 1390266056) @panic("wrong answer");
+    if (sum != 16002606398) @panic("wrong answer");
 }
