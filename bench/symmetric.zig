@@ -27,11 +27,11 @@ pub fn main() !void {
     });
     defer thread_pool.deinit();
 
-    for (0..10) |_| {
+    for (0..20) |_| {
         var wg: std.Thread.WaitGroup = .{};
         defer wg.wait();
 
-        for (0..1000) |i| {
+        for (0..2000) |i| {
             thread_pool.spawnWg(&wg, run, .{ gpa, i });
         }
     }
@@ -41,7 +41,7 @@ fn run(gpa: Allocator, n: usize) void {
     runFallible(gpa, n) catch @panic("OOM");
 }
 
-fn runFallible(gpa: Allocator, n: usize) !void {
+fn runFallible(gpa: Allocator, n: usize) !usize {
     var numbers: std.ArrayListUnmanaged(usize) = .empty;
     defer numbers.deinit(gpa);
 
