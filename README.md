@@ -37,3 +37,9 @@ Benchmark 2 (12 runs): zig-out/bin/symmetric smp
   cache_misses       1.54M  ± 97.9K     1.40M  … 1.73M           1 ( 8%)        💩+ 76.5% ±  8.8%
   branch_misses      1.76M  ± 19.4K     1.74M  … 1.81M           1 ( 8%)        ⚡- 47.4% ±  0.7%
 ```
+
+## Roadmap
+
+ 1. Add more handy programs for playing with allocators.
+ 2. Add a robust testing system for fuzzing and allocator correctness testing.
+ 3. Look into importing or porting other existing open source allocator test suites.
