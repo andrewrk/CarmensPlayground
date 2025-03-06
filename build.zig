@@ -7,6 +7,7 @@ pub fn build(b: *std.Build) void {
 
     example(b, target, optimize, use_llvm, "symmetric", "bench/symmetric.zig");
     example(b, target, optimize, use_llvm, "asymmetric", "bench/asymmetric.zig");
+    example(b, target, optimize, use_llvm, "mpsc", "bench/mpsc.zig");
 }
 
 fn example(
