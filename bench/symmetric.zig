@@ -3,38 +3,36 @@
 const builtin = @import("builtin");
 const std = @import("std");
 const Allocator = std.mem.Allocator;
+const Io = std.Io;
 
 var debug_allocator: std.heap.DebugAllocator(.{
     .safety = false,
     .stack_trace_frames = 0,
 }) = .init;
 
-pub fn main() !void {
+pub fn main(init: std.process.Init) !void {
     var arena_instance = std.heap.ArenaAllocator.init(std.heap.page_allocator);
     const arena = arena_instance.allocator();
-    const args = try std.process.argsAlloc(arena);
+    const args = try init.minimal.args.toSlice(arena);
 
     const Which = enum { debug, smp, c };
     const which = std.meta.stringToEnum(Which, args[1]) orelse @panic("bad allocator choice");
     const gpa = switch (which) {
         .debug => debug_allocator.allocator(),
         .smp => std.heap.smp_allocator,
-        .c => if (builtin.link_libc) std.heap.raw_c_allocator else @panic("need link libc"),
+        .c => if (builtin.link_libc) std.heap.c_allocator else @panic("need link libc"),
     };
 
-    var thread_pool: std.Thread.Pool = undefined;
-    try thread_pool.init(.{
-        .allocator = gpa,
-        .n_jobs = std.Thread.getCpuCount() catch @panic("cpu count"),
-    });
-    defer thread_pool.deinit();
+    var io_threaded: Io.Threaded = .init(gpa, .{});
+    const io: Io = io_threaded.io();
 
     for (0..20) |_| {
-        var wg: std.Thread.WaitGroup = .{};
-        defer wg.wait();
-
+        var g: Io.Group = .init;
+        defer g.await(io) catch |err| switch (err) {
+            error.Canceled => {},
+        };
         for (0..2000) |i| {
-            thread_pool.spawnWg(&wg, run, .{ gpa, i });
+            g.async(io, run, .{ gpa, i });
         }
     }
 }

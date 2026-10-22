@@ -13,9 +13,9 @@ pub fn build(b: *std.Build) void {
 fn example(
     b: *std.Build,
     target: std.Build.ResolvedTarget,
-    optimize: std.builtin.Mode,
+    optimize: std.builtin.OptimizeMode,
     use_llvm: ?bool,
-    name: []const u8,
+    comptime name: []const u8,
     path: []const u8,
 ) void {
     const exe = b.addExecutable(.{
