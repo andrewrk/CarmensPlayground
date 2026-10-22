@@ -8,14 +8,15 @@ pub fn build(b: *std.Build) void {
     example(b, target, optimize, use_llvm, "symmetric", "bench/symmetric.zig");
     example(b, target, optimize, use_llvm, "asymmetric", "bench/asymmetric.zig");
     example(b, target, optimize, use_llvm, "mpsc", "bench/mpsc.zig");
+    example(b, target, optimize, use_llvm, "threadspam", "bench/threadspam.zig");
 }
 
 fn example(
     b: *std.Build,
     target: std.Build.ResolvedTarget,
-    optimize: std.builtin.Mode,
+    optimize: std.builtin.OptimizeMode,
     use_llvm: ?bool,
-    name: []const u8,
+    comptime name: []const u8,
     path: []const u8,
 ) void {
     const exe = b.addExecutable(.{
