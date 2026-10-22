@@ -5,6 +5,12 @@ const std = @import("std");
 const Allocator = std.mem.Allocator;
 const ThreadSafeQueue = @import("ThreadSafeQueue.zig").ThreadSafeQueue;
 const Io = std.Io;
+const Smp2Allocator = @import("Smp2Allocator.zig");
+
+pub const smp2_allocator: std.mem.Allocator = .{
+    .ptr = undefined,
+    .vtable = &Smp2Allocator.vtable,
+};
 
 var debug_allocator: std.heap.DebugAllocator(.{
     .safety = false,
@@ -21,11 +27,12 @@ pub fn main(init: std.process.Init) !void {
     const args = try init.minimal.args.toSlice(arena);
     const io = init.io;
 
-    const Which = enum { debug, smp, c };
+    const Which = enum { debug, smp, smp2, c };
     const which = std.meta.stringToEnum(Which, args[1]) orelse @panic("bad allocator choice");
     const gpa = switch (which) {
         .debug => debug_allocator.allocator(),
         .smp => std.heap.smp_allocator,
+        .smp2 => smp2_allocator,
         .c => if (builtin.link_libc) std.heap.c_allocator else @panic("need link libc"),
     };
 
